@@ -3,11 +3,14 @@ import http.server
 import socketserver
 import sys
 import threading
+import os
 import ConColors
 import NetworkConfig
 
 PARAMETERS = {"HOST": NetworkConfig.ipaddress(), "PORT": "1000",
-              "SERVER_THREAD": None, "HANDLER": None, "HTTPD": socketserver.TCPServer}
+              "DIR": os.path.dirname(os.path.realpath(__file__)),
+              "SERVER_THREAD": None, "HANDLER": None,
+              "HTTPD": socketserver.TCPServer}
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     ''' Wrapper for http server handler '''
@@ -16,7 +19,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 class StatusThread(threading.Thread):
     ''' Thread wrapper class that includes kill functionality '''
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, daemon=None):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None):
         super(StatusThread, self).__init__()
         self.statusevent = threading.Event()
     def run(self):
@@ -107,6 +110,7 @@ def show():
     print("Current Parameters: ")
     print("    Host: " + PARAMETERS["HOST"])
     print("    Port: " + PARAMETERS["PORT"])
+    print("     Dir: " + PARAMETERS["DIR"])
     print("Device Parameters: ")
     print("     IP : " + NetworkConfig.ipaddress())
     print("    Name: " + NetworkConfig.hostname())
@@ -125,18 +129,31 @@ def server(params):
     ''' Server method handler '''
     for param in params:
         if param.upper() == "START":
+            print("")
+            print(ConColors.GREEN + "Starting Server" + ConColors.BLACK)
+            print("    Server: " + ConColors.BLUE + "Initializing Thread" + ConColors.BLACK)
+            os.chdir(PARAMETERS["DIR"])
             PARAMETERS["SERVER_THREAD"] = StatusThread()
             PARAMETERS["SERVER_THREAD"]._target = ___start_server
             PARAMETERS["SERVER_THREAD"]._args = (PARAMETERS["HOST"],
                                                  PARAMETERS["PORT"])
             PARAMETERS["SERVER_THREAD"].daemon = True
+            print("    Server: " + ConColors.BLUE + "Starting Thread" + ConColors.BLACK)
             PARAMETERS["SERVER_THREAD"].start()
+            print("    Server: " + ConColors.GREEN + "Ready" + ConColors.BLACK)
+            print("")
         elif param.upper() == "STOP":
+            print("")
+            print(ConColors.RED + "Stopping Server" + ConColors.BLACK)
+            print("    Server: " + ConColors.BLUE + "Shutting down" + ConColors.BLACK)
             PARAMETERS["HTTPD"].shutdown()
+            print("    Server: " + ConColors.BLUE + "Ending socket" + ConColors.BLACK)
             PARAMETERS["HTTPD"].socket.close()
+            print("    Server: " + ConColors.BLUE + "Ending Thread" + ConColors.BLACK)
             PARAMETERS["SERVER_THREAD"].stop()
             PARAMETERS["SERVER_THREAD"].join()
-
+            print("    Server: " + ConColors.RED + "Stopped" + ConColors.BLACK)
+            print("")
 def ___start_server(_host, _port):
     ''' Server Start Thread '''
     try:
@@ -152,4 +169,7 @@ def exit():
     quit()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(ConColors.BLUE + "Interruption Detected" + ConColors.BLACK)
