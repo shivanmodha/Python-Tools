@@ -1,7 +1,6 @@
+''' Module to prettify text '''
 import sys
-
-lines = sys.stdin
+import json
 
 for line in sys.stdin:
-    print ("Line: " + line[:-1])
-
+    print(json.dumps(json.loads(line), sort_keys=False, indent=4))
