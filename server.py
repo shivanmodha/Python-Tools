@@ -7,7 +7,7 @@ import os
 import ConColors
 import NetworkConfig
 
-PARAMETERS = {"HOST": NetworkConfig.ipaddress(), "PORT": "1000",
+PARAMETERS = {"HOST": NetworkConfig.ipaddress(), "PORT": "4000",
               "DIR": os.path.dirname(os.path.realpath(__file__)),
               "SERVER_THREAD": None, "HANDLER": None,
               "HTTPD": socketserver.TCPServer}
@@ -85,7 +85,7 @@ def main():
     parse_line(send)
     show()
     while True:
-        result = input(ConColors.YELLOW + "NetworkServer: " + ConColors.BLACK)
+        result = input(ConColors.YELLOW + "Server: " + ConColors.BLACK)
         if result:
             result = "--" + result
             params = result.split()
