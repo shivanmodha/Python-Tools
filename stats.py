@@ -10,31 +10,39 @@ except:
     print("psutil installed!")
 
 class CPU(object):
-    @staticmethod
     def usage():
-        #return str(psutil.cpu_percent(interval=1)) + "%"
         psutil.cpu_percent(interval=1)
-        return psutil.cpu_times_percent(interval=1)
-
+        return psutil.cpu_percent(interval=1)
     def cores():
         return psutil.cpu_count()
-
     def uptime():
         epoch = psutil.boot_time()
         return datetime.datetime.fromtimestamp(epoch)
 
 class MEMORY(object):
-    @staticmethod
     def usage():
         return psutil.virtual_memory()[2]
 
-#print (memory_percentage)
-print (CPU.usage())
-print (CPU.cores())
-print (CPU.uptime())
-#print (psutil.cpu_stats())
+class DISK(object):
+    def partitions():
+        obj = {}
+        partitions = psutil.disk_partitions()
+        for i in range(0, len(partitions)):
+            usage = "Unknown"
+            try:
+                usage = psutil.disk_usage(partitions[i][1])[3]
+            except:
+                pass
+            obj[partitions[i][0]] = { "Mount Point": partitions[i][1], "Type": partitions[i][2], "Attributes": partitions[i][3], "Usage": usage }
+        return obj
 
-#print (psutil.disk_partitions())
-#print (psutil.disk_usage('/'))
-#print (psutil.users())
+class SYSTEM(object):
+    def users():
+        return psutil.users()
 
+print ("CPU Usage: " + str(CPU.usage()))
+print ("CPU Cores: " + str(CPU.cores()))
+print ("CPU Uptime: " + str(CPU.uptime()))
+print ("MEMORY Usage: " + str(MEMORY.usage()))
+print ("DISK Partitions: " + str(DISK.partitions()))
+print ("Users: " + str(SYSTEM.users()))
