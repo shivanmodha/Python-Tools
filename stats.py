@@ -38,7 +38,13 @@ class DISK(object):
 
 class SYSTEM(object):
     def users():
-        return psutil.users()
+        obj = {}
+        users = psutil.users()
+        for i in range(0, len(users)):
+            epoch = datetime.datetime.fromtimestamp(users[i][3]).strftime("%Y-%m-%d %H:%M:%S")
+            obj[users[i][0]] = { "Started": epoch }
+        print (users)
+        return obj
 
 print ("CPU Usage: " + str(CPU.usage()))
 print ("CPU Cores: " + str(CPU.cores()))
