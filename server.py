@@ -8,7 +8,7 @@ import ConColors
 import NetworkConfig
 
 PARAMETERS = {"HOST": NetworkConfig.ipaddress(), "PORT": "4000",
-              "DIR": os.path.dirname(os.path.realpath(__file__)),
+              "DIR": os.getcwd(),
               "SERVER_THREAD": None, "HANDLER": None,
               "HTTPD": socketserver.TCPServer}
 
